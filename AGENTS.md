@@ -27,6 +27,7 @@ This file defines working standards for contributors and coding agents in this r
 
 ## Branching Best Practices
 
+- Required flow: `main` -> `dev` -> `feature/*` or `fix/*` -> merge back to `dev` -> merge `dev` to `main`.
 - Keep `dev` as the active integration branch for day-to-day development.
 - Do not commit directly to `dev`; merge through pull requests.
 - Keep `dev` releasable:
@@ -35,6 +36,12 @@ This file defines working standards for contributors and coding agents in this r
   - no unresolved merge markers
 - Rebase or merge from `dev` frequently to reduce long-lived drift in branch history.
 - Require PR review for `dev` merges when possible.
+- After tasks are finished and merged, local branches must be only:
+  - `main`
+  - `dev`
+- Delete all merged topic branches (`feature/*`, `fix/*`, `docs/*`, `chore/*`) both:
+  - locally
+  - on remote (`origin`)
 
 ### `dev` Branch Rules
 
