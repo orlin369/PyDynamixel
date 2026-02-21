@@ -116,6 +116,7 @@ See `Examples/`:
 - `wait_for_move.py`
 - `display_position.py`
 - `grip.py`
+- `list_network.py`
 
 ## Development Workflow
 
