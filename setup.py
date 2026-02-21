@@ -1,28 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from distutils.core import setup
+"""Compatibility setup entrypoint for legacy tooling."""
 
-def get_long_description():
-    """Read project long description from README.md."""
-    with open('README.md', encoding='utf-8') as readme_file:
-        return readme_file.read()
+from setuptools import setup
 
-setup(name = 'pydynamixel',
-      packages = ['pydynamixel'],
-      version = '1.1.0',
-      description = 'A package for controlling Dynamixel servos',
-      long_description = get_long_description(),
-      author = 'Richard Clark',
-      author_email = 'pydev@richard-h-clark.com',
-      url = 'http://richard-h-clark.com/pydynamixel',
-      keywords = ['dynamixel', 'servo'],
-      classifiers = ['Programming Language :: Python',
-                     'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
-                     'Operating System :: OS Independent',
-                     'Development Status :: 4 - Beta',
-                     'Intended Audience :: Developers',
-                     'Intended Audience :: Science/Research',
-                     'Topic :: System :: Hardware'
-                     ]
-      )
+if __name__ == "__main__":
+    setup()

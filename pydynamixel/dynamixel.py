@@ -23,6 +23,7 @@ TIMEOUT = registers.DEFAULT_TIMEOUT
 
 
 def get_serial_for_url(url, baudrate=BAUDRATE, timeout=TIMEOUT):
+    """Open and configure a serial port from URL notation."""
     ser = serial.serial_for_url(url)
     ser.baudrate = baudrate
     ser.timeout = timeout
@@ -30,6 +31,7 @@ def get_serial_for_url(url, baudrate=BAUDRATE, timeout=TIMEOUT):
 
 
 def get_serial_for_com(com, baudrate=BAUDRATE, timeout=TIMEOUT):
+    """Open and configure a serial port from a COM device path."""
     ser = serial.Serial(com)
     ser.baudrate = baudrate
     ser.timeout = timeout
@@ -48,6 +50,7 @@ def flush_serial(ser):
 
 
 def get_error_string(error):
+    """Convert a protocol error bitfield to a human-readable message."""
     errors = []
     if error & registers.ERROR_BIT_MASKS.INPUT_VOLTAGE:
         errors.append("input voltage error")
@@ -72,12 +75,14 @@ def get_error_string(error):
 
 
 def get_exception(error_code):
+    """Map servo error codes to concrete Python exception types."""
     if error_code == registers.ERROR_BIT_MASKS.SEND_CHECKSUM:
         return Exception("Send checksum mismatch.")
     return DynamixelFatalError(get_error_string(error_code) or "Unknown Dynamixel error.")
 
 
 def _read_exact(ser, size):
+    """Read exactly `size` bytes or raise a timeout error."""
     data = ser.read(size)
     if data is None or len(data) != size:
         raise TimeoutError(f"Serial timeout while reading {size} bytes (got {0 if data is None else len(data)}).")
@@ -142,11 +147,13 @@ def write_and_get_response_multiple(
 
 
 def _require_range(name, value, minimum, maximum):
+    """Validate an integer range for register write safety."""
     if not minimum <= value <= maximum:
         raise ValueError(f"{name} must be in range [{minimum}, {maximum}], got {value}.")
 
 
 def ping(ser, servo_id, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Return True if a servo responds to ping."""
     packet = packets.get_ping_packet(servo_id)
     try:
         write_and_get_response_multiple(ser, packet, servo_id, verbose, num_error_attempts)
@@ -156,6 +163,7 @@ def ping(ser, servo_id, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
 
 
 def scan(ser, begin_id=0, end_id=253, verbose=False):
+    """Scan a servo ID range and return discovered IDs."""
     found = []
     for sid in range(begin_id, end_id + 1):
         if ping(ser, sid, verbose=verbose, num_error_attempts=1):
@@ -164,10 +172,12 @@ def scan(ser, begin_id=0, end_id=253, verbose=False):
 
 
 def get_read_packet(servo_id, register, num_bytes=2):
+    """Build a raw read packet for low-level workflows."""
     return packets.get_read_packet(servo_id, register, num_bytes)
 
 
 def read_data(ser, servo_id, register, num_bytes, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Read raw bytes from a servo register region."""
     packet = packets.get_read_packet(servo_id, register, num_bytes)
     resp = write_and_get_response_multiple(ser, packet, servo_id, verbose, num_error_attempts)
     if len(resp.data) != num_bytes:
@@ -176,15 +186,18 @@ def read_data(ser, servo_id, register, num_bytes, verbose=VERBOSE, num_error_att
 
 
 def read_byte(ser, servo_id, register, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Read one byte from a register."""
     return read_data(ser, servo_id, register, 1, verbose, num_error_attempts)[0]
 
 
 def read_word(ser, servo_id, register, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Read one 16-bit little-endian word from a register."""
     data = read_data(ser, servo_id, register, 2, verbose, num_error_attempts)
     return (data[1] << 8) | data[0]
 
 
 def write_byte(ser, servo_id, register, value, deferred=False, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Write one byte to a register."""
     _require_range("byte value", value, 0, 0xFF)
     if deferred:
         packet = packets.get_reg_write_packet_1b(servo_id, register, value)
@@ -194,6 +207,7 @@ def write_byte(ser, servo_id, register, value, deferred=False, verbose=VERBOSE, 
 
 
 def write_word(ser, servo_id, register, value, deferred=False, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Write one 16-bit word to a register."""
     _require_range("word value", value, 0, 0xFFFF)
     if deferred:
         packet = packets.get_reg_write_packet_2b(servo_id, register, value)
@@ -203,48 +217,59 @@ def write_word(ser, servo_id, register, value, deferred=False, verbose=VERBOSE, 
 
 
 def send_action_packet(ser):
+    """Send broadcast ACTION packet."""
     ser.write(packets.get_action_packet())
 
 
 def set_led(ser, servo_id, value, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Set servo LED state register."""
     write_byte(ser, servo_id, registers.LED, value, False, verbose, num_error_attempts)
 
 
 def get_torque(ser, servo_id, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Read present load/torque register."""
     return read_word(ser, servo_id, registers.PRESENT_LOAD, verbose, num_error_attempts)
 
 
 def get_position(ser, servo_id, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Read present position register."""
     return read_word(ser, servo_id, registers.PRESENT_POSITION, verbose, num_error_attempts)
 
 
 def set_position(ser, servo_id, position, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Stage goal position write with value validation."""
     _require_range("position", position, registers.POSITION_MIN, registers.POSITION_MAX)
     write_word(ser, servo_id, registers.GOAL_POSITION, position, True, verbose, num_error_attempts)
 
 
 def set_velocity(ser, servo_id, velocity, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Stage moving-speed write with value validation."""
     _require_range("velocity", velocity, registers.SPEED_MIN, registers.SPEED_MAX)
     write_word(ser, servo_id, registers.MOVING_SPEED, velocity, True, verbose, num_error_attempts)
 
 
 def set_torque_enable(ser, servo_id, enabled, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Enable or disable output torque."""
     write_byte(ser, servo_id, registers.TORQUE_ENABLE, 1 if enabled else 0, False, verbose, num_error_attempts)
 
 
 def get_is_moving(ser, servo_id, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Return movement status flag."""
     return bool(read_byte(ser, servo_id, registers.MOVING, verbose, num_error_attempts))
 
 
 def init(ser, servo_id, verbose=VERBOSE, num_error_attempts=NUM_ERROR_ATTEMPTS):
+    """Initialize servo by writing current position as first goal position."""
     position = get_position(ser, servo_id, verbose, num_error_attempts)
     set_position(ser, servo_id, position, verbose, num_error_attempts)
     send_action_packet(ser)
 
 
 def get_ax12(ser, servo_id):
+    """Create an AX12 object wrapper for one ID."""
     return AX12(ser, servo_id)
 
 
 def get_ax12_chain(ser, ids: Iterable[int]):
+    """Create AX12 wrappers for a sequence of IDs."""
     return [AX12(ser, servo_id) for servo_id in ids]

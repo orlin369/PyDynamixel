@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.2.0] - 2026-02-21
+
+### Added
+- Modern Python packaging metadata via `pyproject.toml`.
+
+### Changed
+- Repository standardized toward a cleaner, OO-first library structure.
+- `README.md` fully rewritten to match current APIs and usage patterns.
+- `setup.py` reduced to a minimal setuptools compatibility entrypoint.
+- Core protocol helper functions now include consistent public docstrings.
+
 ## [1.1.0] - 2026-02-21
 
 ### Added
