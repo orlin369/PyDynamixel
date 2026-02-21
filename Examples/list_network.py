@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Scan and list all reachable servos on a Dynamixel bus."""
+"""Scan and list all reachable servos on a Dynamixel bus.
+
+Usage:
+    python Examples/list_network.py --port COM5
+    python Examples/list_network.py --port /dev/ttyUSB0 --start-id 1 --end-id 20
+"""
 
 import argparse
 
