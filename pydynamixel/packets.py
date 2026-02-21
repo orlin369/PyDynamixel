@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """Packet utilities for Dynamixel Protocol 1.0 (AX-12 family)."""
 
 from . import registers
@@ -99,3 +102,4 @@ def get_read_torque_packet(servo_id):
 
 def get_read_is_moving_packet(servo_id):
     return get_read_packet(servo_id, registers.MOVING, 1)
+

@@ -71,10 +71,14 @@ This file defines working standards for contributors and coding agents in this r
 ## Python Best Practices
 
 - Target Python 3 code style and behavior.
+- Keep each class in its own file (`one class per file`) unless there is a strong, documented reason to group them.
 - Use explicit imports and package-relative imports inside `pydynamixel`.
 - Add type hints for public functions and class methods.
 - Validate function inputs (IDs, register addresses, byte/word ranges).
 - Raise clear exceptions with actionable messages.
+- Every Python source file must begin with:
+  - interpreter shebang (example: `#!/usr/bin/env python3`)
+  - encoding declaration (example: `# -*- coding: utf-8 -*-`)
 - Keep I/O boundaries clean:
   - Packet encoding/decoding stays in packet/transport layers.
   - Business logic stays in higher-level modules.
