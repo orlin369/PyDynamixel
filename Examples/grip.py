@@ -1,70 +1,64 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Gripper-style torque-limited close loop using OO helpers."""
+"""Gripper-style torque-limited close loop using OO helpers.
+
+Usage:
+    python Examples/grip.py --port COM5 --id 7 --limit 700 --velocity 100 --incr 1 --verbose
+    python Examples/grip.py --port /dev/ttyUSB0 --id 5 --limit 600 --velocity 80 --incr -1
+"""
+
+import argparse
 
 from pydynamixel import DynamixelBus, ServoChain
 
-def grip(servo_chain, joint, incr, limit, velocity, verbose):
-    """
-    This function will modify the angular position of the servo with the specified ID until
-    its measured torque exceeds a specified value. This is especailly useful for gripping objects, 
-    as it allows objects of all sizes to be gripped.
-    
-    :param joint: The servo ID of the joint to manipulate.
-    :param incr: The amount by which to increment (or decrement) the current angular position.
-    :param limit: The torque limit, in Dynamixel units. 
-    :param velocity: The velocity at which to change the position.
-    :param verbose: If True, status information will be printed. Default: ``VERBOSE``.
-    :param num_error_attempts: The number of attempts to make to send the packet when an error is encountered.
-    
-    :param servo_chain: ServoChain instance.
-    :returns: The angular position at which the torque was exceeded.
-    """
-    bus = servo_chain.bus
 
-    # The initial angular position
+def parse_args():
+    """Parse command-line arguments for the torque-limited grip example."""
+    parser = argparse.ArgumentParser(description="Close one servo until torque reaches a threshold.")
+    parser.add_argument("--port", required=True, help="Serial port path (example: COM5 or /dev/ttyUSB0).")
+    parser.add_argument("--baudrate", type=int, default=1_000_000, help="Bus baudrate (default: 1000000).")
+    parser.add_argument("--timeout", type=float, default=0.1, help="Read timeout in seconds (default: 0.1).")
+    parser.add_argument("--id", type=int, default=7, help="Servo ID (default: 7).")
+    parser.add_argument("--incr", type=int, default=1, help="Position increment per step (default: 1).")
+    parser.add_argument("--limit", type=int, default=700, help="Torque threshold (default: 700).")
+    parser.add_argument("--velocity", type=int, default=100, help="Step velocity (default: 100).")
+    parser.add_argument("--verbose", action="store_true", help="Enable step-by-step logging.")
+    return parser.parse_args()
+
+
+def grip(servo_chain, joint, incr, limit, velocity, verbose):
+    """Increase/decrease joint position until load exceeds limit."""
+    bus = servo_chain.bus
     val = servo_chain.read_position([joint])[0]
 
-    # Loop forever
     while True:
-        # Get the torque
         torque = bus.get_torque(joint)
-        
-        if verbose:
-            print('Torque: {0}'.format(torque))
 
-        # Check the torque. If greater than the limit, return.
+        if verbose:
+            print(f"Torque: {torque}")
+
         if torque >= limit:
             if verbose:
-                print('Torque at limit!')
-                
+                print("Torque at limit!")
             return val
-        
-        # Otherwise, increment the angular position. 
+
         val += incr
         if verbose:
-            print('Setting val to {0}.'.format(val))
-        
+            print(f"Setting val to {val}.")
+
         vector = servo_chain.make_vector_constant_velocity([val], [joint], velocity)
         servo_chain.move_to_vector(vector)
         servo_chain.wait_for_move([joint])
-    
+
+
 def main():
     """Continuously close grip until load threshold is reached."""
-    url = '/dev/tty.usbserial-A9SFBTPX'
-    bus = DynamixelBus.from_url(url, verbose=False, attempts=10)
+    args = parse_args()
+    bus = DynamixelBus.from_url(args.port, baudrate=args.baudrate, timeout=args.timeout, verbose=False, attempts=3)
     servo_chain = ServoChain(bus)
-    
-    verbose = False
-    joint = 7
-    limit = 700
-    velocity = 100
-    incr = 1
-    
-    grip(servo_chain, joint, incr, limit, velocity, verbose)
+    grip(servo_chain, args.id, args.incr, args.limit, args.velocity, args.verbose)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-    
