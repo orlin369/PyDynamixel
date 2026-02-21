@@ -5,6 +5,8 @@
 
 from . import chain, dynamixel, packets, registers
 from .ax12 import AX12
+from .dynamixel_bus import DynamixelBus
+from .servo_chain import ServoChain
 
-__all__ = ["AX12", "chain", "dynamixel", "packets", "registers"]
+__all__ = ["AX12", "DynamixelBus", "ServoChain", "chain", "dynamixel", "packets", "registers"]
 
