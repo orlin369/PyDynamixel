@@ -80,6 +80,11 @@ This file defines working standards for contributors and coding agents in this r
 - Keep each class in its own file (`one class per file`) unless there is a strong, documented reason to group them.
 - Place all exception classes in an `exceptions/` package.
 - Place all dataclasses in a `data/` package.
+- Add docstrings everywhere:
+  - every module
+  - every class
+  - every public function and method
+  - non-trivial private helpers
 - Use explicit imports and package-relative imports inside `pydynamixel`.
 - Add type hints for public functions and class methods.
 - Validate function inputs (IDs, register addresses, byte/word ranges).
