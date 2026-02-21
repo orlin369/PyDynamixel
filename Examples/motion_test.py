@@ -5,9 +5,10 @@
 This example simply moves a specified servo to a specified position. 
 """
 
-from pydynamixel import dynamixel
+from pydynamixel import DynamixelBus
 
 def main():
+    """Move one servo to a target position using the object-oriented bus API."""
     # You'll need to change this to the serial port of your USB2Dynamixel
     serial_port = "/dev/tty.usbserial-A921X77J"
 
@@ -20,13 +21,13 @@ def main():
     first_move = True
 
     try:
-        ser = dynamixel.get_serial_for_url(serial_port)
+        bus = DynamixelBus.from_url(serial_port)
 
         if first_move:
-            dynamixel.init(ser, servo_id)
+            bus.init_servo(servo_id)
 
-        dynamixel.set_position(ser, servo_id, target_position)
-        dynamixel.send_action_packet(ser)
+        bus.set_position(servo_id, target_position)
+        bus.send_action()
 
         print("Success!")
     except Exception as exc:

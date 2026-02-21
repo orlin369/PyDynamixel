@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pydynamixel"
+version = "1.2.0"
+description = "A Python library for controlling Dynamixel AX-12/AX-12A servos"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "LGPL-3.0-or-later" }
+authors = [
+  { name = "Richard Clark" }
+]
+keywords = ["dynamixel", "servo", "robotics", "ax12"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+  "Operating System :: OS Independent",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Topic :: System :: Hardware",
+]
+dependencies = [
+  "pyserial>=3.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/orlin369/PyDynamixel"
+Repository = "https://github.com/orlin369/PyDynamixel"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pydynamixel*"]

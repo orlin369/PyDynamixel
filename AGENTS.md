@@ -25,9 +25,16 @@ This file defines working standards for contributors and coding agents in this r
   - Relevant tests
   - Example scripts (with hardware disconnected or mocked unless explicitly testing hardware)
 
+## Documentation Update Rule
+
+- Update documentation frequently, not only at release time.
+- For every code change that affects behavior, API, structure, setup, or examples, update the relevant docs in the same branch before merge to `dev`.
+- Keep `README.md`, examples, and `AGENTS.md` aligned with the current implementation.
+
 ## Branching Best Practices
 
 - Required flow: `main` -> `dev` -> `feature/*` or `fix/*` -> merge back to `dev` -> merge `dev` to `main`.
+- Mandatory completion rule: when work is finished on any topic branch (`feature/*`, `fix/*`, `docs/*`, `chore/*`), it must be merged back into `dev`.
 - Keep `dev` as the active integration branch for day-to-day development.
 - Do not commit directly to `dev`; merge through pull requests.
 - Keep `dev` releasable:
