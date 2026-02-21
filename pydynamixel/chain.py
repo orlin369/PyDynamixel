@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """Helpers for coordinated motion of multiple AX-12 servos."""
 
 import time
@@ -64,3 +67,4 @@ def init(ser, joints, velocity, verbose=VERBOSE, num_error_attempts=NUM_ERROR_AT
     move_to_vector(ser, vector, verbose, num_error_attempts)
     wait_for_move(ser, joints, verbose, num_error_attempts)
     return vector
+
