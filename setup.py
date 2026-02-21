@@ -4,14 +4,13 @@
 from distutils.core import setup
 
 def get_long_description():
-    f = open('README.rst')
-    data = f.read()
-    f.close()
-    return data
+    """Read project long description from README.md."""
+    with open('README.md', encoding='utf-8') as readme_file:
+        return readme_file.read()
 
 setup(name = 'pydynamixel',
       packages = ['pydynamixel'],
-      version = '1.0.0',
+      version = '1.1.0',
       description = 'A package for controlling Dynamixel servos',
       long_description = get_long_description(),
       author = 'Richard Clark',
