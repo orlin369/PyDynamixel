@@ -1,39 +1,41 @@
-from pydynamixel import dynamixel, chain
-import sys
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-def display_position(ser, joints, num_error_attempts):
+"""Interactive position monitor using the object-oriented chain helper."""
+
+from pydynamixel import DynamixelBus, ServoChain
+
+def display_position(servo_chain, joints):
     """
     This example will display the current position of the specified axes whenever the
     the ``ENTER`` key is pressed. 
     
-    :param ser: The ``serial`` port to use. 
+    :param servo_chain: ServoChain instance.
     :param joints: A list of servo IDs. 
-    :param verbose: If True, status information will be printed. Default: ``VERBOSE``.
-    :param num_error_attempts: The number of attempts to make to send the packet when an error is encountered.
     
     :returns: ``None``
     """
-    
-    # Clear any data in the serial buffer
-    dynamixel.flush_serial(ser)
-    
-    s = 'Press <ENTER> to display current position. Use q<ENTER> to quit.'
+    prompt = "Press <ENTER> to display current position. Use q<ENTER> to quit: "
     
     while True:
-        i = raw_input(s)
-        if i == 'q':
-            sys.exit(0)
+        user_input = input(prompt).strip().lower()
+        if user_input == "q":
+            break
         
-        vector = chain.read_position(ser, joints, verbose, num_error_attempts)
-        s = str(vector)
+        vector = servo_chain.read_position(joints)
+        print(vector)
         
-if __name__ == '__main__':
+def main():
+    """Run interactive joint position display."""
     url = '/dev/tty.usbserial-A9SFBTPX'
-    ser = dynamixel.get_serial_for_url(url)
+    bus = DynamixelBus.from_url(url, verbose=False, attempts=10)
+    servo_chain = ServoChain(bus)
+
+    joints = [1, 2, 3, 4, 5, 6, 7]
     
-    verbose = False
-    joints = [1,2,3,4,5,6,7]
-    num_error_attempts = 10
-    
-    display_position(ser, joints, num_error_attempts)
+    display_position(servo_chain, joints)
+
+
+if __name__ == '__main__':
+    main()
     

@@ -1,6 +1,14 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """PyDynamixel package."""
 
 from . import chain, dynamixel, packets, registers
-from .dynamixel import AX12
+from .ax12 import AX12
+from .dynamixel_bus import DynamixelBus
+from .servo_chain import ServoChain
 
-__all__ = ["AX12", "chain", "dynamixel", "packets", "registers"]
+__version__ = "1.2.0"
+
+__all__ = ["AX12", "DynamixelBus", "ServoChain", "chain", "dynamixel", "packets", "registers"]
+

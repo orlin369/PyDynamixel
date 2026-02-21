@@ -1,7 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-from pydynamixel import dynamixel, chain
+"""Gripper-style torque-limited close loop using OO helpers."""
 
-def grip(ser, joint, incr, limit, velocity, verbose, num_error_attempts):
+from pydynamixel import DynamixelBus, ServoChain
+
+def grip(servo_chain, joint, incr, limit, velocity, verbose):
     """
     This function will modify the angular position of the servo with the specified ID until
     its measured torque exceeds a specified value. This is especailly useful for gripping objects, 
@@ -14,20 +18,18 @@ def grip(ser, joint, incr, limit, velocity, verbose, num_error_attempts):
     :param verbose: If True, status information will be printed. Default: ``VERBOSE``.
     :param num_error_attempts: The number of attempts to make to send the packet when an error is encountered.
     
+    :param servo_chain: ServoChain instance.
     :returns: The angular position at which the torque was exceeded.
     """
-    # The packet used to read the torque.
-    # This is the same each time it is set.
-    torque_packet = dynamixel.get_read_packet(joint, 0x28, 2)
+    bus = servo_chain.bus
 
     # The initial angular position
-    val = chain.read_position(ser, [joint], verbose, num_error_attempts)[0]
+    val = servo_chain.read_position([joint])[0]
 
     # Loop forever
     while True:
         # Get the torque
-        resp = dynamixel.write_and_get_response_multiple(ser, torque_packet, joint, verbose, num_error_attempts)
-        torque = resp.data[1] * 256 + resp.data[0]
+        torque = bus.get_torque(joint)
         
         if verbose:
             print('Torque: {0}'.format(torque))
@@ -44,20 +46,25 @@ def grip(ser, joint, incr, limit, velocity, verbose, num_error_attempts):
         if verbose:
             print('Setting val to {0}.'.format(val))
         
-        vector = chain.make_vector([val], [joint], velocity)
-        chain.move_to_vector(ser, vector, verbose, num_error_attempts)
-        chain.wait_for_move(ser, [joint], verbose, num_error_attempts)
+        vector = servo_chain.make_vector_constant_velocity([val], [joint], velocity)
+        servo_chain.move_to_vector(vector)
+        servo_chain.wait_for_move([joint])
     
-if __name__ == '__main__':
+def main():
+    """Continuously close grip until load threshold is reached."""
     url = '/dev/tty.usbserial-A9SFBTPX'
-    ser = dynamixel.get_serial_for_url(url)
+    bus = DynamixelBus.from_url(url, verbose=False, attempts=10)
+    servo_chain = ServoChain(bus)
     
     verbose = False
-    num_error_attempts = 10
     joint = 7
-    limit = 1200
+    limit = 700
     velocity = 100
     incr = 1
     
-    grip(ser, joint, incr, limit, velocity, verbose, num_error_attempts)
+    grip(servo_chain, joint, incr, limit, velocity, verbose)
+
+
+if __name__ == '__main__':
+    main()
     

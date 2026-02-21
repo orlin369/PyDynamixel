@@ -25,8 +25,16 @@ This file defines working standards for contributors and coding agents in this r
   - Relevant tests
   - Example scripts (with hardware disconnected or mocked unless explicitly testing hardware)
 
+## Documentation Update Rule
+
+- Update documentation frequently, not only at release time.
+- For every code change that affects behavior, API, structure, setup, or examples, update the relevant docs in the same branch before merge to `dev`.
+- Keep `README.md`, examples, and `AGENTS.md` aligned with the current implementation.
+
 ## Branching Best Practices
 
+- Required flow: `main` -> `dev` -> `feature/*` or `fix/*` -> merge back to `dev` -> merge `dev` to `main`.
+- Mandatory completion rule: when work is finished on any topic branch (`feature/*`, `fix/*`, `docs/*`, `chore/*`), it must be merged back into `dev`.
 - Keep `dev` as the active integration branch for day-to-day development.
 - Do not commit directly to `dev`; merge through pull requests.
 - Keep `dev` releasable:
@@ -35,6 +43,12 @@ This file defines working standards for contributors and coding agents in this r
   - no unresolved merge markers
 - Rebase or merge from `dev` frequently to reduce long-lived drift in branch history.
 - Require PR review for `dev` merges when possible.
+- After tasks are finished and merged, local branches must be only:
+  - `main`
+  - `dev`
+- Delete all merged topic branches (`feature/*`, `fix/*`, `docs/*`, `chore/*`) both:
+  - locally
+  - on remote (`origin`)
 
 ### `dev` Branch Rules
 
@@ -55,6 +69,9 @@ This file defines working standards for contributors and coding agents in this r
 - Include tests and docs updates in the same branch when behavior changes.
 - Open PR into `dev` early if implementation affects protocol, packet parsing, or motion safety.
 - Avoid mixing unrelated refactors into feature branches.
+- After merge into `dev`, delete the feature branch both:
+  - locally
+  - on remote (`origin`)
 
 ### `fix/*` Branch Practices (Target: `dev`)
 
@@ -67,14 +84,28 @@ This file defines working standards for contributors and coding agents in this r
   - user-visible behavior change
   - hardware safety implications
 - Merge `fix/*` into `dev` quickly after validation to prevent duplicate bugs across branches.
+- After merge into `dev`, delete the fix branch both:
+  - locally
+  - on remote (`origin`)
 
 ## Python Best Practices
 
 - Target Python 3 code style and behavior.
+- Keep each class in its own file (`one class per file`) unless there is a strong, documented reason to group them.
+- Place all exception classes in an `exceptions/` package.
+- Place all dataclasses in a `data/` package.
+- Add docstrings everywhere:
+  - every module
+  - every class
+  - every public function and method
+  - non-trivial private helpers
 - Use explicit imports and package-relative imports inside `pydynamixel`.
 - Add type hints for public functions and class methods.
 - Validate function inputs (IDs, register addresses, byte/word ranges).
 - Raise clear exceptions with actionable messages.
+- Every Python source file must begin with:
+  - interpreter shebang (example: `#!/usr/bin/env python3`)
+  - encoding declaration (example: `# -*- coding: utf-8 -*-`)
 - Keep I/O boundaries clean:
   - Packet encoding/decoding stays in packet/transport layers.
   - Business logic stays in higher-level modules.

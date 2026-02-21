@@ -1,4 +1,12 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """AX-12/AX-12A register and value constants (Protocol 1.0)."""
+
+from .error_bit_masks import ERROR_BIT_MASKS
+from .instruction import INSTRUCTION
+from .led_state import LED_STATE
+from .status_return import STATUS_RETURN
 
 # EEPROM (0x00-0x17)
 MODEL_NUMBER = 0x00
@@ -37,37 +45,6 @@ REGISTERED = 0x2C
 MOVING = 0x2E
 LOCK = 0x2F
 PUNCH = 0x30
-
-
-class STATUS_RETURN:
-    NO_STATUS_PACKET = 0
-    RETURN_ONLY_FOR_READ = 1
-    RETURN_FOR_ALL_PACKETS = 2
-
-
-class ERROR_BIT_MASKS:
-    INPUT_VOLTAGE = 0x01
-    ANGLE_LIMIT = 0x02
-    OVERHEATING = 0x04
-    RANGE = 0x08
-    SEND_CHECKSUM = 0x10
-    OVERLOAD = 0x20
-    INSTRUCTION = 0x40
-
-
-class LED_STATE:
-    OFF = 0
-    ON = 1
-
-
-class INSTRUCTION:
-    PING = 0x01
-    READ_DATA = 0x02
-    WRITE_DATA = 0x03
-    REG_WRITE = 0x04
-    ACTION = 0x05
-    RESET = 0x06
-    SYNC_WRITE = 0x83
 
 
 BROADCAST_ID = 0xFE
