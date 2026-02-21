@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
 The following code can be used to turn on the LED on a connected servo 
 (on a POSIX-compliant platform.)
@@ -5,19 +8,24 @@ The following code can be used to turn on the LED on a connected servo
 
 from pydynamixel import dynamixel, registers
 
-# You'll need to change this to the serial port of your USB2Dynamixel
-serial_port = '/dev/tty.usbserial-A921X77J'
+def main():
+    # You'll need to change this to the serial port of your USB2Dynamixel
+    serial_port = "/dev/tty.usbserial-A921X77J"
 
-# You'll need to change this to the ID of your servo
-servo_id = 9
+    # You'll need to change this to the ID of your servo
+    servo_id = 9
 
-# Turn the LED on
-led_value = registers.LED_STATE.ON
-    
-try:
-    ser = dynamixel.get_serial_for_url(serial_port)
-    dynamixel.set_led(ser, servo_id, led_value)
-    print('LED set successfully!')
-except Exception as e:
-    print('Unable to set LED.')
-    print(e)
+    # Turn the LED on
+    led_value = registers.LED_STATE.ON
+
+    try:
+        ser = dynamixel.get_serial_for_url(serial_port)
+        dynamixel.set_led(ser, servo_id, led_value)
+        print("LED set successfully!")
+    except Exception as exc:
+        print("Unable to set LED.")
+        print(exc)
+
+
+if __name__ == "__main__":
+    main()

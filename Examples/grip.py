@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 from pydynamixel import dynamixel, chain
 
@@ -44,7 +46,7 @@ def grip(ser, joint, incr, limit, velocity, verbose, num_error_attempts):
         if verbose:
             print('Setting val to {0}.'.format(val))
         
-        vector = chain.make_vector([val], [joint], velocity)
+        vector = chain.make_vector_constant_velocity([val], [joint], velocity)
         chain.move_to_vector(ser, vector, verbose, num_error_attempts)
         chain.wait_for_move(ser, [joint], verbose, num_error_attempts)
     
@@ -55,7 +57,7 @@ if __name__ == '__main__':
     verbose = False
     num_error_attempts = 10
     joint = 7
-    limit = 1200
+    limit = 700
     velocity = 100
     incr = 1
     

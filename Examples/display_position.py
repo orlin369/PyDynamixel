@@ -1,7 +1,9 @@
-from pydynamixel import dynamixel, chain
-import sys
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-def display_position(ser, joints, num_error_attempts):
+from pydynamixel import chain, dynamixel
+
+def display_position(ser, joints, verbose=False, num_error_attempts=10):
     """
     This example will display the current position of the specified axes whenever the
     the ``ENTER`` key is pressed. 
@@ -17,23 +19,23 @@ def display_position(ser, joints, num_error_attempts):
     # Clear any data in the serial buffer
     dynamixel.flush_serial(ser)
     
-    s = 'Press <ENTER> to display current position. Use q<ENTER> to quit.'
+    prompt = "Press <ENTER> to display current position. Use q<ENTER> to quit: "
     
     while True:
-        i = raw_input(s)
-        if i == 'q':
-            sys.exit(0)
+        user_input = input(prompt).strip().lower()
+        if user_input == "q":
+            break
         
         vector = chain.read_position(ser, joints, verbose, num_error_attempts)
-        s = str(vector)
+        print(vector)
         
 if __name__ == '__main__':
     url = '/dev/tty.usbserial-A9SFBTPX'
     ser = dynamixel.get_serial_for_url(url)
     
     verbose = False
-    joints = [1,2,3,4,5,6,7]
+    joints = [1, 2, 3, 4, 5, 6, 7]
     num_error_attempts = 10
     
-    display_position(ser, joints, num_error_attempts)
+    display_position(ser, joints, verbose, num_error_attempts)
     
