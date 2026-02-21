@@ -55,6 +55,9 @@ This file defines working standards for contributors and coding agents in this r
 - Include tests and docs updates in the same branch when behavior changes.
 - Open PR into `dev` early if implementation affects protocol, packet parsing, or motion safety.
 - Avoid mixing unrelated refactors into feature branches.
+- After merge into `dev`, delete the feature branch both:
+  - locally
+  - on remote (`origin`)
 
 ### `fix/*` Branch Practices (Target: `dev`)
 
@@ -67,11 +70,16 @@ This file defines working standards for contributors and coding agents in this r
   - user-visible behavior change
   - hardware safety implications
 - Merge `fix/*` into `dev` quickly after validation to prevent duplicate bugs across branches.
+- After merge into `dev`, delete the fix branch both:
+  - locally
+  - on remote (`origin`)
 
 ## Python Best Practices
 
 - Target Python 3 code style and behavior.
 - Keep each class in its own file (`one class per file`) unless there is a strong, documented reason to group them.
+- Place all exception classes in an `exceptions/` package.
+- Place all dataclasses in a `data/` package.
 - Use explicit imports and package-relative imports inside `pydynamixel`.
 - Add type hints for public functions and class methods.
 - Validate function inputs (IDs, register addresses, byte/word ranges).

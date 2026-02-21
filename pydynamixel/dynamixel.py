@@ -9,8 +9,8 @@ import serial
 
 from . import packets, registers
 from .ax12 import AX12
-from .dynamixel_fatal_error import DynamixelFatalError
-from .response import Response
+from .data import Response
+from .exceptions import DynamixelFatalError
 
 # The number of retries used for noisy half-duplex buses.
 NUM_ERROR_ATTEMPTS = 10
